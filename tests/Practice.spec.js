@@ -1,4 +1,4 @@
-import{test,expect} from '@playwright/test';
+import{test,expect} from '@playwright/test'
 /*
 async({page})=>{
     this is an annomous function 
@@ -108,6 +108,7 @@ test("Practice",async({page})=> {
     await expect(element1).toHaveText("Username : Admin")   // do not use  await inside the expect block because we are not using any method with element
 
 // Entering the data in the input field.
+
     const element2=page.getByPlaceholder("Username")
     const element3=page.getByPlaceholder("Password")
     //M-1
@@ -117,7 +118,9 @@ test("Practice",async({page})=> {
     //M-2
     await element2.fill('Admin')
     await element3.fill('admin123')
+
 // Clicking on the button
+
    const element4=page.getByRole('button',{type: 'submit'})
 
    //M-1
@@ -127,13 +130,14 @@ test("Practice",async({page})=> {
    await element4.click()
 
  // Verifying whether the text is present on UI or not
+
      const element5=await page.locator("//p[@class='oxd-userdropdown-name']").textContent()
     await expect(await page.getByText(element5)).toBeVisible()
    
    
 // Capturing multiple element and then fatching them
 
-    const elements=await page.$$("//span[@class='oxd-text oxd-text--span oxd-main-menu-item--name']")
+    const elements=await page.$$("//span[@class='oxd-text oxd-text--span oxd-main-menu-item--name']")   // Here await is nessuary
 
      for(const e of elements){
          const elementText= await e.textContent()
@@ -153,7 +157,9 @@ test("Practice",async({page})=> {
          await page.getByRole('combobox', { name: 'Search' }).press('Enter');
 
  // Waits
+
         await page.waitForTimeout(5000)
+        await page.waitForSelector('locator value')
         
 //Handing radio button
        const radiobutton1= page.locator("Locator value for male ")   
@@ -166,8 +172,10 @@ test("Practice",async({page})=> {
 
        //m-3
        await page.check("Locator value")
+
        //Assertion on radio button
        //checking Male radio button is checked or selected
+
        //m-1
        await expect(radiobutton1).toBeChecked()
        //m-2
@@ -226,7 +234,7 @@ test("Practice",async({page})=> {
        await page.locator("Locator of the drop down where all locators are available").selectOption('India')
 
       //M-3 if value and text are same in HTML path
-       await page.locator("Locator of the drop down where all locators are available").selectOption({value:'India'})
+       await page.locator("Locator of the drop down where all locators are available").selectOption({value:'india'})
 
       //M-4 using index
       await page.locator("Locator of the drop down where all locators are available").selectOption({index:3})
@@ -240,14 +248,14 @@ test("Practice",async({page})=> {
       const options=page.locator('Locator of the drop down where all locators are available ')  
       await expect(options).toHaveCount(10)
       //M-2
-     const optionss=page.$$('Locator of the drop down where all locators are available ')  // with the use $$ we are storing al the options in a array
+     const optionss=await page.$$('Locator of the drop down where all locators are available ')  // with the use $$ we are storing al the options in a array
      console.log("total number of options: ", optionss.length)
      await expect(optionss.length).toBe(10)
 
      //To checking presence of value in drop down
      //m-1
-     const content=await page.locator('Locator of the drop down where all locators are available').textContent()
-     await expect(await content.includes('India')).toBeTruthy()
+     const content=await page.locator('Main drop dwon locator').textContent()
+     await expect(content.includes('India')).toBeTruthy()
      //m-2
      const options1=page.$$('Locator of the drop down where all locators are available option') 
      let status = false;
@@ -260,17 +268,74 @@ test("Practice",async({page})=> {
         }
      }
      await expect(status).toBeTruthy()
+
+// Handing multiple drop down ( User can  sel;ect more than one option in the drop down)  
+   //use applicatiopn- https://testautomationpractice.blogspot.com/
+
+     await page.selectOption("Locator of the drop down where all locators are available",['dropdown1' , 'dropdown2', 'dropdown5'])
+
+
+     //Assertions
+     const Multioptions=page.locator('Locator of the drop down where all locators are available ')  
+      await expect(Multioptions).toHaveCount(10)
+
+
+      const Multioptionss=await page.$$('Locator of the drop down where all locators are available ')  // with the use $$ we are storing al the options in a array
+     console.log("total number of options: ", Multioptionss.length)
+     await expect(Multioptionss.length).toBe(10)
+
+     const Multicontent=await page.locator('Locator of the drop down where all locators are available').textContent()
+     await expect(await Multicontent.includes('India')).toBeTruthy()
+
+//Auto suggestion drop down
+
+     //URL- https://www.redbus.in/
+
+
+// handling hidden items in the drop down
+     //use when drop down options are disappering within microseconds 
+     //In this case we can not find locator manually so we need to turn on debugger 
+     //Then click on Drop down and it will pause the screen then we can find the locators manually
+
+//How to Handle Dialogs Or Alerts | alert()
+    // usually all type of alert , dialogs are handling by default by Playwright but if we still want to handle then
+     page.on('dialog',async dialog=>{
+      expect(dialog.type()).toContain('alert')
+      expect(dialog.message()).toContain('I am an alert box')
+      await dialog.accept()
+     })
+  
+     await page.locator('alert button locator').click()
+     await page.waitForTimeout(3000)
+
+//How to Handle ConfirmBox | confirm()
+
+     page.on('dialog',async dialog=>{
+      expect(dialog.type()).toContain('confirm')
+      expect(dialog.message()).toContain('Press a button')
+      await dialog.accept()
+      //await dialog.dismiss()
+     })
+  
+     await page.locator('confirm box button locator').click()
+     await page.waitForTimeout(3000)
+
+//How to Handle prompt | prompt()
+
+     page.on('dialog',async dialog=>{
+      expect(dialog.type()).toContain('prompt')
+      expect(dialog.message()).toContain('Please enter your name:')
+      expect(dialog.defaultValue).toContain('Default Value gives here')
+      await dialog.accept('Tarun sirvi')
+      //await dialog.dismiss()
+     })
+  
+     await page.locator('confirm box button locator').click()
+     await page.waitForTimeout(3000)     
+
+     
+//How to handle to frame/iframe
      }
-
-
-
-
-
-
-
-
-
-
 
 
 })
