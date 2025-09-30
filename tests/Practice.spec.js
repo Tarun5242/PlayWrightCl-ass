@@ -77,8 +77,8 @@ test("Practice",async({page})=> {
 
 // Matching the Url and Title
 
-    const pageTtile=await page.title()  //  similiar to driver.getTitle();
-    const pageURL=await page.url()     //  similiar to driver.getCurrentUrl();
+    const pageTtile=await page.title()  //  similiar to driver.getTitle(); // promise to return a String
+    const pageURL=await page.url()     //  similiar to driver.getCurrentUrl();  // promise to return a String
     await expect(pageTtile).toBe("OrangeHRM")
     await expect(pageURL).toBe("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login")
 
@@ -98,7 +98,7 @@ test("Practice",async({page})=> {
      await expect(await element1.textContent()).toBe("Username : Admin")
 
      //M-2
-     const actualText = await element1.textContent();
+     const actualText = await element1.textContent(); // promise to return a String
      await expect(actualText).toBe("Username : Admin");
 
      //M-3
@@ -333,8 +333,26 @@ test("Practice",async({page})=> {
      await page.locator('confirm box button locator').click()
      await page.waitForTimeout(3000)     
 
-     
+
 //How to handle to frame/iframe
+// use url=//https://ui.vision/demo/webtest/frames/
+     // total frames
+       const totalFrames=await page.frames()   //storing all frames in an array  
+            console.log("Total number of frames :", totalFrames.length)
+
+     // Approach 1 with name and url
+     const frame1=await page.frame('Type name here')  // use when name is present
+     const frame2= await page.frame({url:'type url here from the src attribute'})  // just right click on the url of src and then copy link address       
+     await frame2.fill("locator value of input field inside the Frame", ' Type value here')
+
+     // Approach -2 with Frame Locator
+     const inputfield=await page.frameLocator("locator value of Frame").locator("locator value of input field inside the Frame")
+    await inputfield.fill(" Type value here")
+
+    //nasted frame
+    const parentFrame=await page.frame({url:'type url here from the src attribute'})
+    const childFrame=await parentFrame.childFrames()   //storing all frames in an array 
+    await childFrame[0].locator("locator value of any field").check()  // here we are clicking on the radio button inside the child frame
      }
 
 
